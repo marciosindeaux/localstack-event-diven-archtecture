@@ -1,0 +1,28 @@
+version: "3"
+services: 
+    localstack:
+        image : localstack/localstack:3.3.0
+        container_name: "aws-localstack-event-driven-archtecture"
+        environment:
+            - DOCKER_HOST=unix:///var/run/docker.sock
+            - HOST_TMP_FOLDER=/tmp/localstack
+            - AWS_DEFAULT_REGION=us-east-1
+            - DATA_DIR=/tmp/localstack/data
+            - DEBUG=1
+            - AWS_ACCESS_KEY_ID=keyId
+            - AWS_sECRET_ACCESS_KEY=keySecret
+            - AWS_DEFAULT_REGION=us-east-1
+            - AWS_DEFAULT_OUTPUT=json
+            - USE_SSL=0
+            - SQS_PROVIDER=elasticmq
+            - SERVICES=sqs,sns,s3
+        ports:
+            - '4563-4599:4563-4599'
+        volumes:
+            - "tmp_directory:/var/lib/localstack"
+            - "/var/run/docker.sock:/var/run/docker.sock"
+            - "./localstack:/root/localstack/config"
+            - "./localstack/localstack-entrypoint.sh:/etc/localstack/init/ready.d/init-aws.sh"
+volumes:
+    tmp_directory: {}
+    localstack: {}
