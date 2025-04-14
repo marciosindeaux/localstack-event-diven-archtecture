@@ -9,8 +9,8 @@ services:
             - AWS_DEFAULT_REGION=us-east-1
             - DATA_DIR=/tmp/localstack/data
             - DEBUG=1
-            - AWS_ACCESS_KEY_ID=keyId
-            - AWS_sECRET_ACCESS_KEY=keySecret
+            - AWS_ACCESS_KEY_ID=id
+            - AWS_SECRET_ACCESS_KEY=secret
             - AWS_DEFAULT_REGION=us-east-1
             - AWS_DEFAULT_OUTPUT=json
             - USE_SSL=0

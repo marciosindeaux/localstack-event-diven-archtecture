@@ -2,9 +2,5 @@
     "VisibilityTimeout": "10",
     "DelaySeconds": "1",
     "FifoQueue": "true",
-    "RedrivePolicy": {
-        "deadLetterTargetArn": "{{dlqArn}}",
-        "maxReceiveCount": "2",
-        "VisibilityTimeout":"10"
-    }
+    "RedrivePolicy": "{ \"deadLetterTargetArn\": \"{{dlqArn}}\", \"maxReceiveCount\": \"2\", \"VisibilityTimeout\":\"10\"}"
 }
