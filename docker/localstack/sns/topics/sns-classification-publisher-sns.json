@@ -1,0 +1,5 @@
+{
+    "AttributeValue": "sns-classification-publisher-sns",
+    "AttributeName": "sns-classification-publisher-sns",
+    "TopicArn": "{{topicArn}}"
+}

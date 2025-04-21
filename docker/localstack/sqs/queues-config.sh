@@ -4,10 +4,21 @@ is_fifo_queue() {
     if [[ "$1" == *'fifo'* ]] 
     then 
         echo ">>>>>>>>>>>>>>>>>> [$1 Its a FIFO queue] <<<<<<<<<<<<<<<<<<<<<<<<<<"
-        return 1
+        return 0
     else 
         echo ">>>>>>>>>>>>>>>>>> [$1 Its not a FIFO queue] <<<<<<<<<<<<<<<<<<<<<<<<<<"
+        return 1
+    fi
+}
+
+need_dlq() {
+    if [[ "$1" == *'dlq'* ]] 
+    then 
+        echo ">>>>>>>>>>>>>>>>>> [$1 need a dlq] <<<<<<<<<<<<<<<<<<<<<<<<<<"
         return 0
+    else 
+        echo ">>>>>>>>>>>>>>>>>> [$1 dont need a dlq] <<<<<<<<<<<<<<<<<<<<<<<<<<"
+        return 1
     fi
 }
 
@@ -16,7 +27,7 @@ create_dlq() {
     QUEUE_NAME=$(ls $QUEUE | awk -F. '{print $1}')-dlq
 
     is_fifo_queue $QUEUE_FILE_NAME
-    if [[ $? -eq 1 ]]
+    if [[ $? -eq 0 ]]
     then
         QUEUE_NAME=$QUEUE_NAME.fifo
     fi
@@ -47,7 +58,7 @@ create_queue() {
     
     
     is_fifo_queue $QUEUE_FILE_NAME
-    if [[ $? -eq 1 ]]
+    if [[ $? -eq 0 ]]
     then
         QUEUE_NAME=$QUEUE_NAME.fifo
     fi
@@ -71,7 +82,13 @@ cd $QUEUE_FILES_CONFIG
 for QUEUE in *.json;
 do
     echo ">>>>>>>>>>>>>>>>>> [Reading file: $QUEUE] <<<<<<<<<<<<<<<<<<<<<<<<<<"
-    create_dlq $QUEUE
+
+    need_dlq $QUEUE
+    if [[ $? -eq 0 ]]
+    then
+        create_dlq $QUEUE
+    fi
+
     create_queue $QUEUE
 done
 
