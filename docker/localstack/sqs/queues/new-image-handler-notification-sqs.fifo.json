@@ -1,6 +1,0 @@
-{
-    "VisibilityTimeout": "10",
-    "DelaySeconds": "1",
-    "FifoQueue": "true",
-    "RedrivePolicy": "{ \"maxReceiveCount\": \"2\", \"VisibilityTimeout\":\"10\"}"
-}

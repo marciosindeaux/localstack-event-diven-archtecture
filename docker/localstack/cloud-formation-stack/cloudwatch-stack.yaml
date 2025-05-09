@@ -1,0 +1,40 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Resources:
+  FileUploadQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: file-receiver-notification-sqs
+
+  UploadNotificationPolicy:
+    Type: AWS::SQS::QueuePolicy
+    DependsOn: FileUploadQueue
+    Properties:
+      Queues:
+        - !Ref FileUploadQueue
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal: "*"
+            Action: "sqs:SendMessage"
+            Resource: !GetAtt FileUploadQueue.Arn
+            Condition:
+              ArnLike:
+                aws:SourceArn: arn:aws:s3:::uploaded-file-storage   
+                         
+  StorageBucket:
+    Type: AWS::S3::Bucket
+    DependsOn:
+      - FileUploadQueue
+      - UploadNotificationPolicy
+    Properties:
+      BucketName: uploaded-file-storage
+      NotificationConfiguration:
+        QueueConfigurations:
+          - Event: s3:ObjectCreated:*
+            Queue: !GetAtt FileUploadQueue.Arn
+            Filter:
+              S3Key:
+                Rules:
+                  - Name: prefix
+                    Value: uploads/

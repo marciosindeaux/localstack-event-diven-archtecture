@@ -7,17 +7,7 @@ ROOT_CONFIG_DIR=/root/localstack/config
 
 echo $ROOT_CONFIG_DIR
 
-echo ">>>>>>>>>>>>>>>>>> [Starting queue configurations] <<<<<<<<<<<<<<<<<<<<<<<<<<"
-cd $ROOT_CONFIG_DIR/sqs
-. queues-config.sh
-echo ">>>>>>>>>>>>>>>>>> [Queues are configurated] <<<<<<<<<<<<<<<<<<<<<<<<<<"
-
-echo ">>>>>>>>>>>>>>>>>> [Starting topic configurations] <<<<<<<<<<<<<<<<<<<<<<<<<<"
-cd $ROOT_CONFIG_DIR/sns
-. topics-config.sh
-echo ">>>>>>>>>>>>>>>>>> [Topcs are configurated] <<<<<<<<<<<<<<<<<<<<<<<<<<"
-
-echo ">>>>>>>>>>>>>>>>>> [Starting S3 configurations] <<<<<<<<<<<<<<<<<<<<<<<<<<"
-cd $ROOT_CONFIG_DIR/s3
-. buckets-config.sh
-echo ">>>>>>>>>>>>>>>>>> [S3 are configurated] <<<<<<<<<<<<<<<<<<<<<<<<<<"
+echo ">>>>>>>>>>>>>>>>>> [Starting Stack Configuration] <<<<<<<<<<<<<<<<<<<<<<<<<<"
+cd $ROOT_CONFIG_DIR/cloud-formation-stack
+awslocal cloudformation create-stack --stack-name queue-stack --template-body file://cloudwatch-stack.yaml
+echo ">>>>>>>>>>>>>>>>>> [Ending Stack Configuration] <<<<<<<<<<<<<<<<<<<<<<<<<<"

@@ -1,7 +1,0 @@
-{
-    "VisibilityTimeout": "10",
-    "DelaySeconds": "1",
-    "FifoQueue": "true",
-    "Policy": "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"s3.amazonaws.com\"},\"Action\":\"sqs:SendMessage\",\"Resource\":\"arn:aws:sqs:us-east-1:000000000000:file-receiver-notification-sqs.fifo\"}]}",
-    "RedrivePolicy": "{ \"deadLetterTargetArn\": \"arn:aws:sqs:us-east-1:000000000000:file-receiver-notification-sqs-dlq.fifo\", \"maxReceiveCount\": \"2\", \"VisibilityTimeout\":\"10\"}"
-}
