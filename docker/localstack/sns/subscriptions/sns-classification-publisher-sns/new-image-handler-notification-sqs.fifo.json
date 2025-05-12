@@ -1,9 +1,0 @@
-{
-    "TopicArn": "{{topicArn}}",
-    "Protocol": "sqs",
-    "Endpoint": "{{queueArn}}",
-    "Attributes": {
-        "RawMessageDelivery": "true",
-        "FilterPolicy": "{\"fileType\": \"IMAGE\"}"
-    }
-}

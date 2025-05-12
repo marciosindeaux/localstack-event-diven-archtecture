@@ -1,0 +1,40 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Resources:
+  ChannelInteractionQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: interaction-receiver-notification-sqs
+
+  UploadNotificationPolicy:
+    Type: AWS::SQS::QueuePolicy
+    DependsOn: ChannelInteractionQueue
+    Properties:
+      Queues:
+        - !Ref ChannelInteractionQueue
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal: "*"
+            Action: "sqs:SendMessage"
+            Resource: !GetAtt ChannelInteractionQueue.Arn
+            Condition:
+              ArnLike:
+                aws:SourceArn: arn:aws:s3:::uploaded-file-storage   
+                         
+  InteractionContentStorage:
+    Type: AWS::S3::Bucket
+    DependsOn:
+      - ChannelInteractionQueue
+      - UploadNotificationPolicy
+    Properties:
+      BucketName: content-channel-receiver-storage
+      NotificationConfiguration:
+        QueueConfigurations:
+          - Event: s3:ObjectCreated:*
+            Queue: !GetAtt ChannelInteractionQueue.Arn
+            Filter:
+              S3Key:
+                Rules:
+                  - Name: prefix
+                    Value: uploads/

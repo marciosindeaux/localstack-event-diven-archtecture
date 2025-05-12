@@ -7,17 +7,12 @@ ROOT_CONFIG_DIR=/root/localstack/config
 
 echo $ROOT_CONFIG_DIR
 
-echo ">>>>>>>>>>>>>>>>>> [Starting queue configurations] <<<<<<<<<<<<<<<<<<<<<<<<<<"
-cd $ROOT_CONFIG_DIR/sqs
-. queues-config.sh
-echo ">>>>>>>>>>>>>>>>>> [Queues are configurated] <<<<<<<<<<<<<<<<<<<<<<<<<<"
 
-echo ">>>>>>>>>>>>>>>>>> [Starting topic configurations] <<<<<<<<<<<<<<<<<<<<<<<<<<"
-cd $ROOT_CONFIG_DIR/sns
-. topics-config.sh
-echo ">>>>>>>>>>>>>>>>>> [Topcs are configurated] <<<<<<<<<<<<<<<<<<<<<<<<<<"
-
-echo ">>>>>>>>>>>>>>>>>> [Starting S3 configurations] <<<<<<<<<<<<<<<<<<<<<<<<<<"
-cd $ROOT_CONFIG_DIR/s3
-. buckets-config.sh
-echo ">>>>>>>>>>>>>>>>>> [S3 are configurated] <<<<<<<<<<<<<<<<<<<<<<<<<<"
+cd $ROOT_CONFIG_DIR/cloud-formation-stack
+for stack in *.yaml;
+do
+    stack_name=$(ls $stack | awk -F. '{print $1}')
+    echo ">>>>>>>>>>>>>>>>>> [Starting Stack Configuration for $stack_name ] <<<<<<<<<<<<<<<<<<<<<<<<<<"
+    awslocal cloudformation create-stack --stack-name $stack_name --template-body file://$stack
+    echo ">>>>>>>>>>>>>>>>>> [Ending Stack Configuration for $stack_name ] <<<<<<<<<<<<<<<<<<<<<<<<<<"
+done
