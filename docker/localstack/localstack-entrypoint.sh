@@ -7,7 +7,12 @@ ROOT_CONFIG_DIR=/root/localstack/config
 
 echo $ROOT_CONFIG_DIR
 
-echo ">>>>>>>>>>>>>>>>>> [Starting Stack Configuration] <<<<<<<<<<<<<<<<<<<<<<<<<<"
+
 cd $ROOT_CONFIG_DIR/cloud-formation-stack
-awslocal cloudformation create-stack --stack-name queue-stack --template-body file://cloudwatch-stack.yaml
-echo ">>>>>>>>>>>>>>>>>> [Ending Stack Configuration] <<<<<<<<<<<<<<<<<<<<<<<<<<"
+for stack in *.yaml;
+do
+    stack_name=$(ls $stack | awk -F. '{print $1}')
+    echo ">>>>>>>>>>>>>>>>>> [Starting Stack Configuration for $stack_name ] <<<<<<<<<<<<<<<<<<<<<<<<<<"
+    awslocal cloudformation create-stack --stack-name $stack_name --template-body file://$stack
+    echo ">>>>>>>>>>>>>>>>>> [Ending Stack Configuration for $stack_name ] <<<<<<<<<<<<<<<<<<<<<<<<<<"
+done

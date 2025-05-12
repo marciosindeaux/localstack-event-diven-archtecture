@@ -1,0 +1,180 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Resources:
+# Event Bridge
+  InteractionProcessorEventBus:
+    Type: AWS::Events::EventBus
+    Properties:
+      Name: interaction-processor-bridge
+
+# SQS Queues
+  HorizontalQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: default-video-processor-sqs
+
+  ShortsQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: shorts-processor-sqs
+  
+  CommunityPostQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: community-post-processor-sqs
+  
+  AudioConversorQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: podcast-musicvideo-processor-sqs
+  
+  MusicQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: music-albun-processor-sqs
+
+# SQS Polices
+  QueuePolicyDefault:
+    Type: AWs::SQS::QueuePolicy
+    Properties:
+      Queues:
+        - !Ref HorizontalQueue
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: events.amazonaws.com
+            Action: "sqs:SendMessage"
+            Resource: !GetAtt HorizontalQueue.Arn
+            Condition:
+              ArnEquals:
+                aws:SourceArn: !GetAtt InteractionProcessorEventBus.Arn
+
+  QueuePolicyDefault:
+    Type: AWs::SQS::QueuePolicy
+    Properties:
+      Queues:
+        - !Ref ShortsQueue
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: events.amazonaws.com
+            Action: "sqs:SendMessage"
+            Resource: !GetAtt ShortsQueue.Arn
+            Condition:
+              ArnEquals:
+                aws:SourceArn: !GetAtt InteractionProcessorEventBus.Arn
+
+  QueuePolicyDefault:
+    Type: AWs::SQS::QueuePolicy
+    Properties:
+      Queues:
+        - !Ref CommunityPostQueue
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: events.amazonaws.com
+            Action: "sqs:SendMessage"
+            Resource: !GetAtt CommunityPostQueue.Arn
+            Condition:
+              ArnEquals:
+                aws:SourceArn: !GetAtt InteractionProcessorEventBus.Arn
+
+  QueuePolicyDefault:
+    Type: AWs::SQS::QueuePolicy
+    Properties:
+      Queues:
+        - !Ref AudioConversorQueue
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: events.amazonaws.com
+            Action: "sqs:SendMessage"
+            Resource: !GetAtt AudioConversorQueue.Arn
+            Condition:
+              ArnEquals:
+                aws:SourceArn: !GetAtt InteractionProcessorEventBus.Arn
+
+  QueuePolicyDefault:
+    Type: AWs::SQS::QueuePolicy
+    Properties:
+      Queues:
+        - !Ref MusicQueue
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: events.amazonaws.com
+            Action: "sqs:SendMessage"
+            Resource: !GetAtt MusicQueue.Arn
+            Condition:
+              ArnEquals:
+                aws:SourceArn: !GetAtt InteractionProcessorEventBus.Arn
+
+# Event Redirect Rules
+  HorizontalRule:
+    Type: AWS::Events::Rule
+    Properties:
+      EventBusName: !Ref InteractionProcessorEventBus
+      EventPattern:
+        detail:
+          contentCategory:
+            - "HORIZONTAL_CONTENT"
+      Targets:
+        - Arn: !GetAtt HorizontalQueue.Arn
+          Id: HorizontalQueueTarget
+
+  ShortslRule:
+    Type: AWS::Events::Rule
+    Properties:
+      EventBusName: !Ref InteractionProcessorEventBus
+      EventPattern:
+        detail:
+          contentCategory:
+            - "SHORTS_CONTENT"
+      Targets:
+        - Arn: !GetAtt ShortsQueue.Arn
+          Id: ShortsQueueTarget
+
+  CommunityPostRule:
+    Type: AWS::Events::Rule
+    Properties:
+      EventBusName: !Ref InteractionProcessorEventBus
+      EventPattern:
+        detail:
+          contentCategory:
+            - "COMMUNITY_CONTENT"
+      Targets:
+        - Arn: !GetAtt CommunityPostQueue.Arn
+          Id: CommunityPostQueueTarget
+
+  AudioConversorRule:
+    Type: AWS::Events::Rule
+    Properties:
+      EventBusName: !Ref InteractionProcessorEventBus
+      EventPattern:
+        detail:
+          contentCategory:
+            - "AUDIO_CONTENT"
+      Targets:
+        - Arn: !GetAtt AudioConversorQueue.Arn
+          Id: AudioConversorQueueTarget
+
+  MusicRule:
+    Type: AWS::Events::Rule
+    Properties:
+      EventBusName: !Ref InteractionProcessorEventBus
+      EventPattern:
+        detail:
+          contentCategory:
+            - "MUSIC_ALBUM_CONTENT"
+      Targets:
+        - Arn: !GetAtt MusicQueue.Arn
+          Id: MusicQueueTarget
